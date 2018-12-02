@@ -29,7 +29,7 @@ public class Note {
 
         private Option<Date> created = Option.none();
         private Option<String> text = Option.none();
-        private List<Attachment> attachments = List.of();
+        private List<Attachment> attachments = new LinkedList<>();
 
         public Builder withDateCreated(Date created) {
             this.created = Option.of(created);
@@ -42,7 +42,10 @@ public class Note {
         }
 
         public Builder withAttachments(List<Attachment> attachments) {
-            if (attachments != null) this.attachments = attachments;
+            if (attachments != null) {
+                this.attachments.clear();
+                this.attachments.addAll(attachments);
+            }
             return this;
         }
 

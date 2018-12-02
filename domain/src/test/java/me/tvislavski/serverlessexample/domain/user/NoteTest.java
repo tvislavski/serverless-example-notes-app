@@ -1,5 +1,6 @@
 package me.tvislavski.serverlessexample.domain.user;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -53,5 +54,19 @@ public class NoteTest {
         var attachments = new LinkedList<Attachment>();
         attachments.add(null);
         assertThat(Note.builder().withText(noteText).withAttachments(attachments).build()).isLeft();
+    }
+
+    @Test
+    public void testNoteEquality() {
+        var note1 = Note.builder().withText(noteText).withAttachments(List.of(Attachment.from(imageBytes).get())).build().get();
+        var note2 = Note.builder().withText(noteText).withAttachments(List.of(Attachment.from(imageBytes).get())).build().get();
+        Assert.assertEquals(note1, note2);
+    }
+
+    @Test
+    public void testNoteInequality() {
+        var note1 = Note.builder().withText(noteText).withAttachments(List.of(Attachment.from(imageBytes).get())).build().get();
+        var note2 = Note.builder().withText(noteText).build().get();
+        Assert.assertNotEquals(note1, note2);
     }
 }
