@@ -7,6 +7,7 @@ import me.tvislavski.serverlessexample.domain.Error;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @EqualsAndHashCode(of = "email")
 @ToString
@@ -23,7 +24,8 @@ public class User {
 
     public static Either<Error, User> from(Email email, List<Note> notes) {
         if (email == null) return Either.left(new ArgumentEmpty("User.email"));
-        if (notes == null || notes.isEmpty()) return Either.left(new ArgumentEmpty("User.notes"));
+        if (notes == null || notes.isEmpty() || notes.stream().anyMatch(Objects::isNull))
+            return Either.left(new ArgumentEmpty("User.notes"));
         return Either.right(new User(email, notes));
     }
 }
