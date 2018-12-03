@@ -6,10 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.tvislavski.serverlessexample.domain.ArgumentEmpty;
 import me.tvislavski.serverlessexample.domain.Error;
-import me.tvislavski.serverlessexample.domain.user.Email;
-import me.tvislavski.serverlessexample.domain.user.Note;
-import me.tvislavski.serverlessexample.domain.user.User;
-import me.tvislavski.serverlessexample.domain.user.UserRepository;
+import me.tvislavski.serverlessexample.domain.user.*;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
@@ -23,7 +20,7 @@ public class UserService {
 
         return userRepository.getUserBy(email)
                 .peek(user -> log.info("Successfully loaded user: {}", user))
-                .peekLeft(error -> log.info("Error loading user with email {}: {}", email, error));
+                .peekLeft(error -> log.warn("Error loading user with email {}: {}", email, error));
     }
 
     public Either<Error, User> updateUserWithNote(Email userEmail, Note note) {
@@ -31,7 +28,19 @@ public class UserService {
         if (userEmail == null) return Either.left(new ArgumentEmpty("UserService.userEmail"));
         if (note == null) return Either.left(new ArgumentEmpty("UserService.note"));
 
+        return getUserFromRepositoryOrCreateNew(userEmail)
+                .map(user -> user.updateWithNote(note))
+                .flatMap(userRepository::save)
+                .peek(user -> log.info("Updated user: {}", user))
+                .peekLeft(error -> log.warn("Error while updating user {}: {}", userEmail, error));
+    }
 
+    private Either<Error, User> getUserFromRepositoryOrCreateNew(Email userEmail) {
+        var userEither = getUserBy(userEmail);
+        if (userEither.isLeft() && userEither.getLeft() instanceof UserNotFound) {
+            return User.from(userEmail);
+        }
+        return userEither;
     }
 
     public static Either<Error, UserService> from(UserRepository userRepository) {
