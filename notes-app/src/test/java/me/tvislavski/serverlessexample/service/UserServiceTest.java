@@ -1,8 +1,12 @@
 package me.tvislavski.serverlessexample.service;
 
 import io.vavr.control.Either;
-import me.tvislavski.serverlessexample.domain.Error;
-import me.tvislavski.serverlessexample.domain.user.*;
+import me.tvislavski.serverlessexample.model.Error;
+import me.tvislavski.serverlessexample.model.user.Email;
+import me.tvislavski.serverlessexample.model.user.Note;
+import me.tvislavski.serverlessexample.model.user.User;
+import me.tvislavski.serverlessexample.ports.repository.UserNotFound;
+import me.tvislavski.serverlessexample.ports.repository.UserRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
